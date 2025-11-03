@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>宝宝专属</title>
+    <style>
+        /* 页面背景保持浅樱花粉不变 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff0f3;
+            min-height: 100vh;
+        }
+        /* 普通弹窗：还原随机背景色+统一为专属弹窗同款字体 */
+        .tip-box {
+            position: fixed;
+            padding: 15px 20px;
+            border-radius: 8px;
+            /* 字体完全匹配专属弹窗：仿宋+深色（与专属弹窗文字色协调） */
+            font-family: "仿宋", serif;
+            font-size: 18px;
+            color: #333; /* 深色字体确保可读性，与专属弹窗#e63946同属深色系 */
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            cursor: default;
+            display: none;
+            /* 还原随机背景色（JS中控制，此处不固定） */
+        }
+        .final-tip {
+            width: 540px;
+            height: 150px;
+            font-size: 36px;
+            line-height: 150px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(255, 105, 180, 0.3);
+            background-color: #ffd6e0;
+            color: #e63946;
+            z-index: 10001;
+            position: fixed;
+            text-align: center;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            transition: opacity 1.2s ease, transform 1.2s ease;
+            display: none;
+            font-family: "仿宋", serif; /* 确保专属弹窗字体一致 */
+        }
+        .final-tip.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            display: block;
+        }
+        .music-control {
+            position: fixed;
+            padding: 12px 24px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            z-index: 10002;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.8s ease;
+        }
+        .music-control.moved {
+            left: auto;
+            top: auto;
+            bottom: 20px;
+            right: 20px;
+            transform: none;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-music" loop>
+        <source src="bg-music.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放，请更换浏览器尝试。
+    </audio>
+    <button class="music-control" onclick="startAll()">宝宝准备好了嘛，点击开始</button>
+
+    <script>
+        const tips = [
+            '好好吃饭', '好好休息', '早点休息', '天天开心', '记得喝水',
+            '按时吃饭', '别熬夜了', '照顾好自己', '注意身体', '记得运动',
+            '放松一下', '保持微笑', '劳逸结合', '别太劳累', '记得午休',
+            '多吃水果', '出去走走', '呼吸新鲜空气', '保持好心情', '别久坐',
+            '记得早餐', '保护眼睛', '注意保暖', '别着凉', '保持健康',
+            '平安喜乐', '开心每一天', '一切顺利', '万事如意', '心想事成'
+        ];
+
+        // 还原普通弹窗的随机背景色列表
+        const bgColors = [
+            'lightpink', 'skyblue', 'lightgreen', 'lavender', 'lightyellow',
+            'plum', 'coral', 'bisque', 'aquamarine', 'mistyrose', 'honeydew',
+            'peachpuff', 'paleturquoise', 'lavenderblush', 'oldlace', 'lemonchiffon',
+            'lightcyan', 'lightgray', 'lightpink', 'lightsalmon', 'lightseagreen',
+            'lightskyblue', 'lightslategray', 'lightsteelblue', 'lightyellow'
+        ];
+
+        let finalTipCreated = false;
+
+        // 普通弹窗：还原随机背景色+使用统一字体
+        function createTipBox() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const boxWidth = 270;
+            const boxHeight = 75;
+
+            const randomX = Math.floor(Math.random() * (screenWidth - boxWidth));
+            const randomY = Math.floor(Math.random() * (screenHeight - boxHeight));
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            const randomBg = bgColors[Math.floor(Math.random() * bgColors.length)]; // 还原随机背景色
+
+            const tipBox = document.createElement('div');
+            tipBox.className = 'tip-box';
+            tipBox.textContent = randomTip;
+            tipBox.style.left = `${randomX}px`;
+            tipBox.style.top = `${randomY}px`;
+            tipBox.style.backgroundColor = randomBg; // 应用随机背景色
+            document.body.appendChild(tipBox);
+
+            setTimeout(() => {
+                tipBox.style.display = 'block';
+            }, 10);
+
+            setTimeout(() => {
+                tipBox.style.display = 'none';
+                tipBox.remove();
+            }, 20000);
+        }
+
+        function createFinalTip() {
+            if (finalTipCreated) return;
+            finalTipCreated = true;
+
+            const finalBox = document.createElement('div');
+            finalBox.className = 'final-tip';
+            finalBox.textContent = '晓婷宝宝～我爱你';
+            document.body.appendChild(finalBox);
+
+            setTimeout(() => {
+                finalBox.style.display = 'block';
+                setTimeout(() => {
+                    finalBox.classList.add('show');
+
+                    setTimeout(() => {
+                        const music = document.getElementById('bg-music');
+                        music.pause();
+                        const btn = document.querySelector('.music-control');
+                        btn.textContent = '播放音乐';
+                    }, 5000);
+                }, 100);
+            }, 10);
+        }
+
+        function startAll() {
+            const music = document.getElementById('bg-music');
+            const btn = document.querySelector('.music-control');
+
+            music.play();
+            btn.textContent = '暂停音乐';
+            btn.classList.add('moved');
+            btn.onclick = toggleMusic;
+
+            const windowCount = 600;
+            const createInterval = 30;
+            const finalTipDelay = windowCount * createInterval + 20000;
+
+            for (let i = 0; i < windowCount; i++) {
+                setTimeout(createTipBox, i * createInterval);
+            }
+
+            setTimeout(createFinalTip, finalTipDelay);
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const btn = document.querySelector('.music-control');
+            if (music.paused) {
+                music.play();
+                btn.textContent = '暂停音乐';
+            } else {
+                music.pause();
+                btn.textContent = '播放音乐';
+            }
+        }
+    </script>
+</body>
+</html>
